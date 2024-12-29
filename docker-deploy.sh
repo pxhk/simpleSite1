@@ -24,6 +24,10 @@ cd $APP_DIR
 # Clone repository
 git clone -b dev3 https://github.com/pxhk/simpleSite1.git .
 
+# Docker Hub login
+echo "Please enter your Docker Hub credentials:"
+docker login
+
 # Check for local changes and build/pull images accordingly
 echo "Checking and building Docker images..."
 
@@ -45,11 +49,13 @@ if git diff --quiet HEAD -- . ':!backend'; then
     else
         echo "Building frontend image..."
         docker-compose build frontend
+        echo "Pushing frontend image to Docker Hub..."
         docker push ${FRONTEND_IMAGE}:${FRONTEND_TAG}
     fi
 else
     echo "Changes detected for frontend, building new image..."
     docker-compose build frontend
+    echo "Pushing frontend image to Docker Hub..."
     docker push ${FRONTEND_IMAGE}:${FRONTEND_TAG}
 fi
 
@@ -64,11 +70,13 @@ if git diff --quiet HEAD -- backend; then
     else
         echo "Building backend image..."
         docker-compose build backend
+        echo "Pushing backend image to Docker Hub..."
         docker push ${BACKEND_IMAGE}:${BACKEND_TAG}
     fi
 else
     echo "Changes detected for backend, building new image..."
     docker-compose build backend
+    echo "Pushing backend image to Docker Hub..."
     docker push ${BACKEND_IMAGE}:${BACKEND_TAG}
 fi
 
