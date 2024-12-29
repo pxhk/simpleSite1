@@ -2,27 +2,23 @@ version: '3.8'
 
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: docker/frontend/Dockerfile
+    build: ./
     container_name: react-frontend
     restart: unless-stopped
     networks:
       - app-network
 
   backend:
-    build:
-      context: .
-      dockerfile: docker/backend/Dockerfile
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: node-backend
     restart: unless-stopped
     networks:
       - app-network
 
   nginx:
-    build:
-      context: .
-      dockerfile: docker/nginx/Dockerfile
+    image: nginx:alpine
     container_name: nginx-proxy
     ports:
       - "80:80"
