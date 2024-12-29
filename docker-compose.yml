@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      tags:
+        - kuruvikuru/simplesite:frontend-latest
     container_name: react-frontend
     restart: unless-stopped
     networks:
@@ -14,6 +16,8 @@ services:
     build: 
       context: ./backend
       dockerfile: Dockerfile
+      tags:
+        - kuruvikuru/simplesite:backend-latest
     container_name: node-backend
     restart: unless-stopped
     networks:
