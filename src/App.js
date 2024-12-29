@@ -7,22 +7,30 @@ function App() {
     hostname: 'Loading...',
     ipAddress: 'Loading...'
   });
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchSystemInfo = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/system-info');
+        const response = await axios.get('/api/system-info');
+        console.log('API Response:', response.data);
         setSystemInfo(response.data);
+        setError(null);
       } catch (error) {
         console.error('Error fetching system info:', error);
         setSystemInfo({
           hostname: 'Error loading hostname',
           ipAddress: 'Error loading IP'
         });
+        setError(error.message);
       }
     };
 
     fetchSystemInfo();
+    
+    const interval = setInterval(fetchSystemInfo, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -34,6 +42,11 @@ function App() {
             <h2>System Information</h2>
             <p>Hostname: {systemInfo.hostname}</p>
             <p>IP Address: {systemInfo.ipAddress}</p>
+            {error && (
+              <p className="error-message" style={{ color: '#ff6b6b' }}>
+                Error: {error}
+              </p>
+            )}
           </div>
         </div>
       </header>
