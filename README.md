@@ -1,6 +1,6 @@
 # Simple Site
 
-A React application with Node.js backend, deployed using Docker.
+A React application with Node.js backend, deployed using Docker and automated image management.
 
 ## Project Structure
 ```
@@ -10,20 +10,39 @@ A React application with Node.js backend, deployed using Docker.
 │   └── Dockerfile    # Backend Dockerfile
 ├── nginx.conf         # Nginx reverse proxy configuration
 ├── docker-compose.yml # Docker Compose configuration
-└── docker-deploy.sh   # Deployment script
+└── docker-deploy.sh   # Deployment script with Docker Hub integration
 ```
+
+## Features
+- React frontend
+- Node.js backend
+- Nginx reverse proxy
+- Docker containerization
+- Automated Docker image management
+- Docker Hub integration
+
+## Docker Hub Repository
+Images are automatically built and pushed to Docker Hub:
+- Frontend: `kuruvikuru/simplesite:frontend-latest`
+- Backend: `kuruvikuru/simplesite:backend-latest`
 
 ## Deployment Instructions
 
 1. SSH into your Amazon Linux 2023 instance
-2. Clone this repository:
+2. Run the deployment script:
    ```bash
-   curl -o docker-deploy.sh https://raw.githubusercontent.com/pxhk/simpleSite1/dev2/docker-deploy.sh
+   curl -o docker-deploy.sh https://raw.githubusercontent.com/pxhk/simpleSite1/dev3/docker-deploy.sh
    chmod +x docker-deploy.sh
    sudo ./docker-deploy.sh
    ```
 
-3. The application will be available at your instance's public IP address.
+The script will:
+1. Install necessary dependencies
+2. Clone the repository
+3. Check for code changes
+4. Build and push Docker images if needed
+5. Pull existing images if no changes
+6. Start all services
 
 ## Architecture
 
@@ -44,15 +63,32 @@ npm install
 npm start
 ```
 
-## Production Build
+## Docker Image Management
 
-The application is containerized using Docker:
+The application uses automated Docker image management:
+1. Images are stored in Docker Hub
+2. New images are built only when code changes are detected
+3. Existing images are reused when no changes are present
+
+### Manual Docker Commands
 ```bash
-docker-compose up -d --build
+# Build images
+docker-compose build
+
+# Push images to Docker Hub
+docker push kuruvikuru/simplesite:frontend-latest
+docker push kuruvikuru/simplesite:backend-latest
+
+# Start services
+docker-compose up -d
 ```
 
-This will:
-1. Build the frontend React application
-2. Build the backend Node.js application
-3. Set up Nginx reverse proxy
-4. Start all services in containers
+## CI/CD Flow
+1. Make code changes
+2. Push to GitHub
+3. Run deployment script on server
+4. Script automatically:
+   - Detects changes
+   - Builds new images if needed
+   - Pushes to Docker Hub
+   - Updates running containers
