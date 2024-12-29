@@ -1,70 +1,58 @@
-# Hello World DevOps Project
+# Simple Site
 
-A simple React application that displays "Hello World" along with system hostname and IP address. This project is part of a complete DevOps pipeline demonstration.
-
-## Features
-
-- React frontend
-- Express backend
-- System information display (hostname & IP)
-- Docker containerization
-- AWS deployment with Terraform
-- CI/CD with Jenkins
-
-## Prerequisites
-
-- Node.js (v14 or higher)
-- npm
-- Git
-
-## Local Development
-
-1. Clone the repository:
-\`\`\`bash
-git clone <your-repository-url>
-cd simple-devops-project
-\`\`\`
-
-2. Install dependencies:
-\`\`\`bash
-# Install frontend dependencies
-npm install
-
-# Install backend dependencies
-cd backend
-npm install
-\`\`\`
-
-3. Start the development servers:
-\`\`\`bash
-# Start backend server (from backend directory)
-node server.js
-
-# Start frontend server (from root directory)
-npm start
-\`\`\`
-
-4. Open [http://localhost:3000](http://localhost:3000) to view the application
+A React application with Node.js backend, deployed using Docker.
 
 ## Project Structure
+```
+.
+├── Dockerfile          # Frontend Dockerfile
+├── backend/           # Backend Node.js application
+│   └── Dockerfile    # Backend Dockerfile
+├── nginx.conf         # Nginx reverse proxy configuration
+├── docker-compose.yml # Docker Compose configuration
+└── docker-deploy.sh   # Deployment script
+```
 
-- `/src` - React frontend code
-- `/backend` - Express backend code
-- `/public` - Static files
-- `/terraform` - Infrastructure as Code files
-- `Dockerfile` - Docker configuration
-- `Jenkinsfile` - CI/CD pipeline configuration
+## Deployment Instructions
 
-## Available Scripts
+1. SSH into your Amazon Linux 2023 instance
+2. Clone this repository:
+   ```bash
+   curl -o docker-deploy.sh https://raw.githubusercontent.com/pxhk/simpleSite1/dev2/docker-deploy.sh
+   chmod +x docker-deploy.sh
+   sudo ./docker-deploy.sh
+   ```
 
-- `npm start` - Runs the frontend in development mode
-- `npm test` - Launches the test runner
-- `npm run build` - Builds the app for production
+3. The application will be available at your instance's public IP address.
 
-## Contributing
+## Architecture
 
-1. Fork the repository
-2. Create your feature branch (\`git checkout -b feature/AmazingFeature\`)
-3. Commit your changes (\`git commit -m 'Add some AmazingFeature'\`)
-4. Push to the branch (\`git push origin feature/AmazingFeature\`)
-5. Open a Pull Request
+- **Frontend**: React application served by Nginx
+- **Backend**: Node.js application
+- **Proxy**: Nginx reverse proxy
+  - Routes `/` to frontend
+  - Routes `/api` to backend
+
+## Development
+
+To run locally:
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+```
+
+## Production Build
+
+The application is containerized using Docker:
+```bash
+docker-compose up -d --build
+```
+
+This will:
+1. Build the frontend React application
+2. Build the backend Node.js application
+3. Set up Nginx reverse proxy
+4. Start all services in containers
