@@ -1,5 +1,6 @@
 services:
   frontend:
+    image: kuruvikuru/simplesite:frontend-latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,6 +10,7 @@ services:
       - app-network
 
   backend:
+    image: kuruvikuru/simplesite:backend-latest
     build: 
       context: ./backend
       dockerfile: Dockerfile
