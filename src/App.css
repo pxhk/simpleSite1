@@ -9,8 +9,42 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  font-size: calc(10px + 2vmin);
   color: white;
   padding: 20px;
+}
+
+.feature-box {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  max-width: 600px;
+  width: 90%;
+}
+
+.feature-box h2 {
+  color: #61dafb;
+  margin-bottom: 20px;
+}
+
+.feature-box ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.feature-box li {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: rgba(97, 218, 251, 0.1);
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.feature-box li:hover {
+  transform: translateX(10px);
+  background-color: rgba(97, 218, 251, 0.2);
 }
 
 h1 {
