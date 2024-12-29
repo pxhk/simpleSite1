@@ -25,8 +25,16 @@ cd $APP_DIR
 git clone -b dev3 https://github.com/pxhk/simpleSite1.git .
 
 # Docker Hub login
-echo "Please enter your Docker Hub credentials:"
-docker login
+echo "Please log in to Docker Hub to push images:"
+while true; do
+    if sudo docker login; then
+        echo "Successfully logged in to Docker Hub"
+        break
+    else
+        echo "Docker Hub login failed. Please try again."
+        read -p "Press Enter to retry or Ctrl+C to exit"
+    fi
+done
 
 # Check for local changes and build/pull images accordingly
 echo "Checking and building Docker images..."
@@ -45,18 +53,18 @@ FRONTEND_TAG="frontend-latest"
 if git diff --quiet HEAD -- . ':!backend'; then
     if check_image_exists "$FRONTEND_IMAGE" "$FRONTEND_TAG"; then
         echo "No changes detected for frontend, pulling existing image..."
-        docker pull ${FRONTEND_IMAGE}:${FRONTEND_TAG}
+        sudo docker pull ${FRONTEND_IMAGE}:${FRONTEND_TAG}
     else
         echo "Building frontend image..."
-        docker-compose build frontend
+        sudo docker-compose build frontend
         echo "Pushing frontend image to Docker Hub..."
-        docker push ${FRONTEND_IMAGE}:${FRONTEND_TAG}
+        sudo docker push ${FRONTEND_IMAGE}:${FRONTEND_TAG}
     fi
 else
     echo "Changes detected for frontend, building new image..."
-    docker-compose build frontend
+    sudo docker-compose build frontend
     echo "Pushing frontend image to Docker Hub..."
-    docker push ${FRONTEND_IMAGE}:${FRONTEND_TAG}
+    sudo docker push ${FRONTEND_IMAGE}:${FRONTEND_TAG}
 fi
 
 # Handle backend
@@ -66,21 +74,21 @@ BACKEND_TAG="backend-latest"
 if git diff --quiet HEAD -- backend; then
     if check_image_exists "$BACKEND_IMAGE" "$BACKEND_TAG"; then
         echo "No changes detected for backend, pulling existing image..."
-        docker pull ${BACKEND_IMAGE}:${BACKEND_TAG}
+        sudo docker pull ${BACKEND_IMAGE}:${BACKEND_TAG}
     else
         echo "Building backend image..."
-        docker-compose build backend
+        sudo docker-compose build backend
         echo "Pushing backend image to Docker Hub..."
-        docker push ${BACKEND_IMAGE}:${BACKEND_TAG}
+        sudo docker push ${BACKEND_IMAGE}:${BACKEND_TAG}
     fi
 else
     echo "Changes detected for backend, building new image..."
-    docker-compose build backend
+    sudo docker-compose build backend
     echo "Pushing backend image to Docker Hub..."
-    docker push ${BACKEND_IMAGE}:${BACKEND_TAG}
+    sudo docker push ${BACKEND_IMAGE}:${BACKEND_TAG}
 fi
 
 # Start services
-docker-compose up -d
+sudo docker-compose up -d
 
 echo "Deployment complete! Application should be running at http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)"
