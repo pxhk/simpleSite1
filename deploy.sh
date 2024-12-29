@@ -99,6 +99,20 @@ log "Starting backend server..."
 pm2 start server.js --name "backend-server" --time
 check_status "Backend server startup"
 
+# Set correct permissions and SELinux context
+log "Setting file permissions and SELinux context..."
+sudo chown -R ec2-user:nginx ~/app
+sudo chmod -R 755 ~/app
+sudo chmod -R 775 ~/app/simpleSite1/build  # Ensure Nginx can access build directory
+
+# If SELinux is enabled, set the correct context
+if command_exists sestatus && sestatus | grep -q "SELinux status: *enabled"; then
+    log "Setting SELinux context..."
+    sudo semanage fcontext -a -t httpd_sys_content_t "/home/ec2-user/app/simpleSite1/build(/.*)?"
+    sudo restorecon -Rv /home/ec2-user/app/simpleSite1/build
+    check_status "SELinux context setup"
+fi
+
 # Install and configure Nginx
 log "Installing Nginx..."
 sudo dnf install -y nginx
@@ -113,6 +127,13 @@ server {
 
     root /home/ec2-user/app/simpleSite1/build;
     index index.html;
+
+    # Handle favicon.ico
+    location = /favicon.ico {
+        try_files \$uri /favicon.ico =404;
+        access_log off;
+        log_not_found off;
+    }
 
     location / {
         try_files \$uri \$uri/ /index.html;
@@ -155,12 +176,6 @@ check_status "Nginx configuration"
 
 # Remove default Nginx configuration
 sudo rm -f /etc/nginx/conf.d/default.conf
-
-# Set correct permissions
-log "Setting file permissions..."
-sudo chown -R ec2-user:ec2-user ~/app
-sudo chmod -R 755 ~/app
-check_status "Permission setup"
 
 # Start Nginx
 log "Starting Nginx..."
