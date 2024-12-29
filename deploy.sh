@@ -65,10 +65,11 @@ if [ -d "simpleSite1" ]; then
     log "Updating existing repository..."
     cd simpleSite1
     git fetch origin
-    git reset --hard origin/main
+    git checkout dev
+    git reset --hard origin/dev
 else
     log "Cloning repository..."
-    git clone https://github.com/pxhk/simpleSite1.git
+    git clone -b dev https://github.com/pxhk/simpleSite1.git
     cd simpleSite1 || exit 1
 fi
 check_status "Repository setup"
