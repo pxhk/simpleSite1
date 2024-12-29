@@ -44,13 +44,20 @@ if [ "$EUID" -ne 0 ] && ! sudo -v >/dev/null 2>&1; then
     error "Please run this script with sudo privileges"
 fi
 
+# Install git first if not present
+if ! command_exists git; then
+    log "Installing git..."
+    sudo dnf install -y git
+    check_status "Git installation"
+fi
+
 # Update system and install basic tools
 log "Updating system packages..."
 sudo dnf update -y
 check_status "System update"
 
 log "Installing basic tools..."
-sudo dnf install -y curl wget git tar gzip unzip which jq
+sudo dnf install -y curl wget tar gzip unzip which jq
 check_status "Basic tools installation"
 
 # Install Docker if not present
