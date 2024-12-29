@@ -44,6 +44,11 @@ if [ "$EUID" -ne 0 ] && ! sudo -v >/dev/null 2>&1; then
     error "Please run this script with sudo privileges"
 fi
 
+# Update system first
+log "Updating system packages..."
+sudo dnf update -y
+check_status "System update"
+
 # Install git first if not present
 if ! command_exists git; then
     log "Installing git..."
@@ -51,14 +56,25 @@ if ! command_exists git; then
     check_status "Git installation"
 fi
 
-# Update system and install basic tools
-log "Updating system packages..."
-sudo dnf update -y
-check_status "System update"
+# Handle curl package separately
+log "Configuring curl..."
+if ! command_exists curl; then
+    # Remove any conflicting curl packages
+    sudo dnf remove -y curl curl-minimal >/dev/null 2>&1 || true
+    # Install curl with --allowerasing to handle conflicts
+    sudo dnf install -y --allowerasing curl
+    check_status "Curl installation"
+fi
 
+# Install other basic tools
 log "Installing basic tools..."
-sudo dnf install -y curl wget tar gzip unzip which jq
-check_status "Basic tools installation"
+for tool in wget tar gzip unzip which jq; do
+    if ! command_exists $tool; then
+        log "Installing $tool..."
+        sudo dnf install -y $tool
+        check_status "$tool installation"
+    fi
+done
 
 # Install Docker if not present
 if ! command_exists docker; then
